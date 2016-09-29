@@ -145,7 +145,6 @@ public interface HttpMessageConverter<T> {
 
 }
 ```
-
 框架提供了主要媒体类型的具体实现，默认在客户端使用`RestTemplate`、在服务端使用`AnnotationMethodHandlerAdapter`进行注册。
 
 下面描述了`HttpMessageConverter`的多个实现。所有的转换器都使用了默认媒体类型，可以通过设置`supportedMediaTypes`实体属性进行重写。
@@ -172,41 +171,4 @@ public interface HttpMessageConverter<T> {
 一种可以从Http请求和响应读写`javax.xml.transform.Source`的`HttpMessageConverter`实现。仅支持`DOMSource`、`SAXSource`和`StreamSource`。这种转换器默认支持`text/xml`和`application/xml`。
 
 #### BufferedImageHttpMessageConverter ####
-一种可以从Http请求和响应读写`java.awt.image.BufferedImage`的`HttpMessageConverter`实现。这种转换器读写Java I/O API支持的媒体类型。
-
-### 28.10.3 异步RestTemplate ###
-Web应用经常需要查询外部REST服务。在为了满足这些需求缩放应用的时候，Http和同步调用的特性会导致挑战的产生，多线程可能被堵塞，等待远程Http响应。
-
-`AsyncRestTemplate`和28.10.1节中`RestTemplate`的API非常简单，参考表28.1"RestTemplate方法概览"。这些API之间最主要的不同是`AsyncRestTemplate`返回与具体结果相反的`ListenableFuture`封装。
-
-前面的`RestTemplate`转化如下：
-```
-// async call
-Future<ResponseEntity<String>> futureEntity = template.getForEntity(
-    "http://example.com/hotels/{hotel}/bookings/{booking}", String.class, "42", "21");
-
-// get the concrete result - synchronous call
-ResponseEntity<String> entity = futureEntity.get();
-```
-
-`ListenableFuture`接收完成时回调：
-```
-ListenableFuture<ResponseEntity<String>> futureEntity = template.getForEntity(
-    "http://example.com/hotels/{hotel}/bookings/{booking}", String.class, "42", "21");
-
-// register a callback
-futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
-    @Override
-    public void onSuccess(ResponseEntity<String> entity) {
-        //...
-    }
-
-    @Override
-    public void onFailure(Throwable t) {
-        //...
-    }
-});
-```
-*`AsyncRestTemplate`默认构造器注册了一个`SimpleAsyncTaskExecutor`来执行Http请求。在处理大量短请求的时候，一个类似于`ThreadPoolTaskExecutor`的带有线程池的TaskExecutor实现会是一个好的选择。*
-
-详情请查阅ListenableFuture和AsyncRestTemplate文档。
+一种可以从Http请求和响应读写`java.awt.image.BufferedImage`的`HttpMessageConverter`实现。这种转换器读写Java I/O API支持媒体类型。
